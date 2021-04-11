@@ -3,3 +3,5 @@ pypiwin32==223
 pyttsx3==2.90
 pywin32==300
 SpeechRecognition==3.8.1
+
+pyinstaller --hidden-import=pyttsx3.drivers --hidden-import=pyttsx3.drivers.dummy --hidden-import=pyttsx3.drivers.espeak --hidden-import=pyttsx3.drivers.nsss --hidden-import=pyttsx3.drivers.sapi5 -F main.py
