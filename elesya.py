@@ -12,6 +12,7 @@ from bs4 import BeautifulSoup as BS
 import requests, bs4, re
 import webbrowser as wb
 import pyautogui as pg
+import cv2
 from selenium import webdriver
 
 
@@ -21,7 +22,7 @@ opts = {
               'элисия','елисе','elisey','элеси','жилище','элисед','elisio','elise',
               'жилища','ереси','элисис','делисия','гилея'),
     "tbr": ('скажи', 'расскажи', 'покажи', 'сколько', 'произнеси','найди','найти','открой',
-            'сделай'),
+            'сделай','включи'),
     "cmds": {
         "ctime": ('текущее время', 'сейчас времени', 'который час'),
         "open_browse": ('открой браузер', 'открой гугл', 'открой интернет'),
@@ -36,7 +37,8 @@ opts = {
         "any": ('искать','поисковик','поиск'),
         "new_tab": ('новую вкладку', 'новая вкладка', 'вкладка','вкладку'),
         "close_tab": ('закрой вкладку','закрыть вкладку'),
-        "hello": ('привет', 'здравствуй')
+        "hello": ('привет', 'здравствуй'),
+        'camera': ('камера','видеокамера')
     }
 }
 
@@ -191,6 +193,18 @@ def execute_cmd(cmd):
         tmp = ['хэлоу', 'привет', 'салам', 'здравствуйте', 'тэрэ','бонжур']
         num = random.choice(tmp)
         speak(num)
+
+    elif cmd == 'camera':
+        cap = cv2.VideoCapture(0)
+
+        while True:
+            ret, img = cap.read()
+            cv2.imshow("camera", img)
+            if cv2.waitKey(10) == 27:
+                break
+
+        cap.release()
+        cv2.destroyAllWindows()
 
 
     else:
