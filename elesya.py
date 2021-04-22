@@ -12,8 +12,8 @@ import requests, bs4, re
 import webbrowser as wb
 import pyautogui as pg
 import cv2
-# from selenium import webdriver
-# from face import main
+from selenium import webdriver
+from face import main
 
 import requests, bs4, re, webbrowser
 import os, sys, subprocess
@@ -252,24 +252,24 @@ speak_engine.setProperty('voice', 'ru')
 
 
 speak("Добрый день. Меня зовут Елеся")
-# cap = cv2.VideoCapture(0)
-#
-# while True:
-#     speak("Начинаю индентификацию")
-#     ret, img = cap.read()
-#     cv2.imshow("camera", img)
-#     pg.hotkey("escape")
-#     if cv2.waitKey(10) == 27:
-#         pg.screenshot(rf"C:\Users\ivane\eles\elesya_voice_hub\photo\access.png")
-#         speak("Лицо отсканировано")
-#         access = main()
-#         if access[0] == True:
-#             speak(access[1])
-#             break
-#         elif access[0] == False:
-#             speak(access[1])
-# cap.release()
-# cv2.destroyAllWindows()
+cap = cv2.VideoCapture(0)
+
+while True:
+    speak("Начинаю индентификацию")
+    ret, img = cap.read()
+    cv2.imshow("camera", img)
+    pg.hotkey("escape")
+    if cv2.waitKey(10) == 27:
+        pg.screenshot(rf"C:\Users\ivane\eles\elesya_voice_hub\photo\access.png")
+        speak("Лицо отсканировано")
+        access = main()
+        if access[0] == True:
+            speak(access[1])
+            break
+        elif access[0] == False:
+            speak(access[1])
+cap.release()
+cv2.destroyAllWindows()
 
 
 while True:
