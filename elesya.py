@@ -39,9 +39,9 @@ opts = {
         'funny': ('анекдот','расскажи анекдот','рассмеши меня', 'ты знаешь анекдоты'),
         "whome": ('Кто я', 'твой создатель'),
         "search_youtube":("ютюб",'утуб','ютуб','youtube'),
-        "search":("алладин",'аладин', 'aladdin'),
         "screen": ('скрин',"скриншот","фото"),
-        "any": ('искать','поисковик','поиск'),
+        "search": ('искать','поисковик','поиск'),
+        "search_pic": ('картинка','картинку','изображение'),
         "new_tab": ('новую вкладку', 'новая вкладка', 'вкладка','вкладку'),
         "close_tab": ('закрой вкладку','закрыть вкладку'),
         "hello": ('привет', 'здравствуй'),
@@ -76,11 +76,11 @@ def callback(recognizer, audio):
 
             # распознаем и выполняем команду
             if len(cmd.split())>1:
-                a = cmd.split(' ', 1)[1]
+                user_word = cmd.split(' ', 1)[1]
             else:
-                a=cmd
+                user_word =cmd
             cmd = recognize_cmd(cmd)
-            execute_cmd(cmd['cmd'],a)
+            execute_cmd(cmd['cmd'],user_word)
 
     except sr.UnknownValueError:
         print("[log] Голос не распознан!")
@@ -100,15 +100,15 @@ def recognize_cmd(cmd):
 
     return RC
 
-def execute_cmd(cmd,a):
+def execute_cmd(cmd,user_word):
     if cmd == 'ctime':
         # сказать текущее время
         now = datetime.datetime.now()
         speak(f"Сейчас {now.hour} часов {now.minute} минут")
 
     elif cmd == "search_youtube":
-        print(a)
-        b = a.split()
+        print(user_word)
+        b = user_word.split()
         b = '+'.join(b)
         zz = []
         sq = 'http://www.youtube.com/results?search_query=' + quote(b)
@@ -125,7 +125,7 @@ def execute_cmd(cmd,a):
         print(s)
         s = 'https://www.youtube.com/watch?v=' + s + '?autoplay=1'
         wb.open(s)
-        speak(f"Запрос {a} найден")
+        speak(f"Запрос {user_word} найден")
 
 
     elif cmd == "note_book":
@@ -206,22 +206,16 @@ def execute_cmd(cmd,a):
         speak("Вы лучший в мире человек, мой создатель Иван Елескин, ваша мудрость несравненна")
 
 
-
     elif cmd == "search":
-        wb.open("https://kadikama.ru/106-aladdin.html")
-        speak("Алладин открыт. Приятного просмотра")
+        b = user_word.split()
+        b = '+'.join(b)
+        wb.open(f"https://www.google.com/search?q={b}&rlz=1C1CHZN_ruEE949EE949&oq=%D0%B3%D0%B4%D0%B5+%D0%B6%D0%B8%D0%B2%D1%83%D1%82+%D0%BA%D0%B8%D1%82%D1%8B&aqs=chrome..69i57j0l2j0i22i30l7.5522j0j15&sourceid=chrome&ie=UTF-8")
 
-    elif cmd == "any":
-        try:
-            wb.open("https://www.google.com/search?q=%D0%B5%D0%BD%D0%BE%D1%82&oq=&aqs=chrome.1.35i39i362l8...8.28022660j0j15&sourceid=chrome&ie=UTF-8")
-            pg.hotkey("winleft", "up")
-            speak("Что ищем?")
-            sleep(1)
-            x, y = pg.locateCenterOnScreen(r"C:\Users\ivane\eles\elesya_voice_hub\photo\mic3.png")
-            pg.click(x, y)
+    elif cmd == "search_pic":
+        b = user_word.split()
+        b = '+'.join(b)
+        wb.open(f"https://www.google.com/search?q={b}&tbm=isch&ved=2ahUKEwj5gZ_Oq5LwAhWXsSoKHUUVBUwQ2-cCegQIABAA&oq=%D0%BA%D0%B8%D1%82&gs_lcp=CgNpbWcQAzIECAAQQzIECAAQQzIECAAQQzIECAAQQzICCAAyAggAMgIIADICCAAyAggAMgIIADoGCAAQBxAeOgQIABAYUNQhWM1AYNJCaABwAHgAgAGmAYgB-giSAQM3LjSYAQCgAQGqAQtnd3Mtd2l6LWltZ8ABAQ&sclient=img&ei=gq2BYPm4C5fjqgHFqpTgBA&bih=937&biw=1920&rlz=1C1CHZN_ruEE949EE949")
 
-        except TypeError as e:
-            speak("У Елеси не вышло, видно руки из гнезна растут")
 
     elif cmd == "screen":
         now = datetime.datetime.now()
