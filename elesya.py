@@ -75,7 +75,6 @@ def callback(recognizer, audio):
                 cmd = cmd.replace(x, "").strip()
 
             # распознаем и выполняем команду
-            print(cmd)
             if len(cmd.split())>1:
                 a = cmd.split(' ', 1)[1]
             else:
@@ -105,7 +104,7 @@ def execute_cmd(cmd,a):
     if cmd == 'ctime':
         # сказать текущее время
         now = datetime.datetime.now()
-        speak("Сейчас " + str(now.hour) + ":" + str(now.minute))
+        speak(f"Сейчас {now.hour} часов {now.minute} минут")
 
     elif cmd == "search_youtube":
         print(a)
@@ -133,18 +132,22 @@ def execute_cmd(cmd,a):
         speak("открываю ваш блокнот")
         os.system('notepad')
 
-    elif cmd == 'close_note_book':
-        try:
-            pg.FAILSAFE = False
-            x,y = pg.locateCenterOnScreen(r"C:\Users\ivane\eles\elesya_voice_hub\photo\browser_close.png")
-            pg.click(x,y)
-            speak("Блокнот закрыт")
-        except TypeError as e:
-            speak("У Елеси не вышло, видно руки у меня из гнезна растут")
+    # elif cmd == 'close_note_book':
+    #     try:
+    #         pg.FAILSAFE = False
+    #         x,y = pg.locateCenterOnScreen(r"C:\Users\ivane\eles\elesya_voice_hub\photo\browser_close.png")
+    #         pg.click(x,y)
+    #         speak("Блокнот закрыт")
+    #     except TypeError as e:
+    #         speak("У Елеси не вышло, видно руки у меня из гнезна растут")
 
     elif cmd == 'open_browse':
-        wb.open("https://www.google.ru/")
-        speak("Браузер открыт")
+        try:
+            wb.open("https://www.google.ru/")
+            speak("Браузер открыт")
+
+        except TypeError as e:
+            speak("У Елеси не вышло, видно руки из гнезна растут")
 
     elif cmd == "new_tab":
         try:
@@ -154,7 +157,7 @@ def execute_cmd(cmd,a):
             pg.move(50, 50, 0.5)
             speak("Новая вкладка открыта")
         except TypeError as e:
-            speak("У Елеси не вышло, видно руки у меня из гнезна растут")
+            speak("У Елеси не вышло, видно руки из гнезна растут")
 
     elif cmd == 'close_tab':
         try:
@@ -164,7 +167,7 @@ def execute_cmd(cmd,a):
             pg.move(50, 50, 0.5)
             speak("Вкладка закрыта")
         except TypeError as e:
-            speak("У Елеси не вышло, видно руки у меня из гнезна растут")
+            speak("У Елеси не вышло, видно руки из гнезна растут")
 
     elif cmd == 'close_browse':
         try:
@@ -173,7 +176,7 @@ def execute_cmd(cmd,a):
             pg.click(x,y)
             speak("Браузер закрыт")
         except TypeError as e:
-            speak("У Елеси не вышло, видно руки у меня из гнезна растут")
+            speak("У Елеси не вышло, видно руки из гнезна растут")
 
 
     elif cmd == 'off_comp':
@@ -216,11 +219,9 @@ def execute_cmd(cmd,a):
             sleep(1)
             x, y = pg.locateCenterOnScreen(r"C:\Users\ivane\eles\elesya_voice_hub\photo\mic3.png")
             pg.click(x, y)
-            # x, y = pg.locateCenterOnScreen(r"C:\Users\ivane\eles\elesya_voice_hub\photo\mic5.png")
-            # pg.click(x, y)
 
         except TypeError as e:
-            speak("У Елеси не вышло, видно руки у меня из гнезна растут")
+            speak("У Елеси не вышло, видно руки из гнезна растут")
 
     elif cmd == "screen":
         now = datetime.datetime.now()
