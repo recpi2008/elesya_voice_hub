@@ -13,7 +13,7 @@ import webbrowser as wb
 import pyautogui as pg
 import cv2
 # from selenium import webdriver
-from face import main
+# from face import main
 
 import requests, bs4, re, webbrowser
 import os, sys, subprocess
@@ -75,7 +75,11 @@ def callback(recognizer, audio):
                 cmd = cmd.replace(x, "").strip()
 
             # распознаем и выполняем команду
-            a = cmd.split(' ', 1)[1]
+            print(cmd)
+            if len(cmd.split())>1:
+                a = cmd.split(' ', 1)[1]
+            else:
+                a=cmd
             cmd = recognize_cmd(cmd)
             execute_cmd(cmd['cmd'],a)
 
@@ -254,7 +258,7 @@ speak_engine.setProperty('voice', 'ru')
 
 speak("Добрый день. Меня зовут Елеся")
 # cap = cv2.VideoCapture(0)
-
+#
 # while True:
 #     speak("Начинаю индентификацию")
 #     ret, img = cap.read()
