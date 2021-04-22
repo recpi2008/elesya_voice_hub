@@ -1,24 +1,35 @@
-
-import os
+import os, sys, subprocess
+from time import sleep
+import random
 import time
 import speech_recognition as sr
 from fuzzywuzzy import fuzz
 import pyttsx3
 import datetime
-import subprocess
 import requests
 from bs4 import BeautifulSoup as BS
 import requests, bs4, re
 import webbrowser as wb
 import pyautogui as pg
+import cv2
+from selenium import webdriver
+from face import main
+
+import requests, bs4, re, webbrowser
+import os, sys, subprocess
+from urllib import request
+from urllib.parse import quote
+import urllib.request
+import html2text
 
 
 # настройки
 opts = {
     "alias": ('елес', 'елеся', 'и леся', 'леся', 'илеся', 'еся','елец','олеся',
-              'элисия','елисе','elisey','элеси','жилище','элисед'),
+              'элисия','елисе','elisey','элеси','жилище','элисед','elisio','elise',
+              'жилища','ереси','элисис','делисия','гилея','илюся','элез'),
     "tbr": ('скажи', 'расскажи', 'покажи', 'сколько', 'произнеси','найди','найти','открой',
-            'сделай'),
+            'сделай','включи'),
     "cmds": {
         "ctime": ('текущее время', 'сейчас времени', 'который час'),
         "open_browse": ('открой браузер', 'открой гугл', 'открой интернет'),
@@ -28,8 +39,15 @@ opts = {
         'funny': ('анекдот','расскажи анекдот','рассмеши меня', 'ты знаешь анекдоты'),
         "whome": ('Кто я', 'твой создатель'),
         "search_youtube":("ютюб",'утуб','ютуб','youtube'),
-        "search":("алладин",'аладин', 'aladdin'),
-        "screen": ('скрин',"скриншот","фото")
+        "screen": ('скрин',"скриншот","фото"),
+        "search": ('искать','поисковик','поиск'),
+        "search_pic": ('картинка','картинку','изображение'),
+        "new_tab": ('новую вкладку', 'новая вкладка', 'вкладка','вкладку'),
+        "close_tab": ('закрой вкладку','закрыть вкладку'),
+        "hello": ('привет', 'здравствуй'),
+        'camera': ('камера','видеокамера'),
+        "note_book": ("блокнот","запись"),
+        'close_note_book': ("закрой блокнот", "закрой")
     }
 }
 
@@ -47,7 +65,7 @@ def callback(recognizer, audio):
         print("[log] Распознано: " + voice)
 
         if voice.startswith(opts["alias"]):
-            # обращаются к Кеше
+            # обращаются к Елесе
             cmd = voice
 
             for x in opts['alias']:
@@ -57,8 +75,12 @@ def callback(recognizer, audio):
                 cmd = cmd.replace(x, "").strip()
 
             # распознаем и выполняем команду
+            if len(cmd.split())>1:
+                user_word = cmd.split(' ', 1)[1]
+            else:
+                user_word =cmd
             cmd = recognize_cmd(cmd)
-            execute_cmd(cmd['cmd'])
+            execute_cmd(cmd['cmd'],user_word)
 
     except sr.UnknownValueError:
         print("[log] Голос не распознан!")
@@ -78,22 +100,84 @@ def recognize_cmd(cmd):
 
     return RC
 
-
-def execute_cmd(cmd):
+def execute_cmd(cmd,user_word):
     if cmd == 'ctime':
         # сказать текущее время
         now = datetime.datetime.now()
-        speak("Сейчас " + str(now.hour) + ":" + str(now.minute))
+        speak(f"Сейчас {now.hour} часов {now.minute} минут")
+
+    elif cmd == "search_youtube":
+        print(user_word)
+        b = user_word.split()
+        b = '+'.join(b)
+        zz = []
+        sq = 'http://www.youtube.com/results?search_query=' + quote(b)
+        doc = urllib.request.urlopen(sq).read().decode('cp1251', errors='ignore')
+        match = re.findall("\?v\=(.+?)\"", doc)
+        if not (match is None):
+            for ii in match:
+                if (len(ii) < 25):
+                    zz.append(ii)
+        zz2 = dict(zip(zz, zz)).values()
+        zz3 = []
+        for qq in zz2: zz3.append(qq)
+        s = zz3[0]
+        print(s)
+        s = 'https://www.youtube.com/watch?v=' + s + '?autoplay=1'
+        wb.open(s)
+        speak(f"Запрос {user_word} найден")
+
+
+    elif cmd == "note_book":
+        speak("открываю ваш блокнот")
+        os.system('notepad')
+
+    # elif cmd == 'close_note_book':
+    #     try:
+    #         pg.FAILSAFE = False
+    #         x,y = pg.locateCenterOnScreen(r"C:\Users\ivane\eles\elesya_voice_hub\photo\browser_close.png")
+    #         pg.click(x,y)
+    #         speak("Блокнот закрыт")
+    #     except TypeError as e:
+    #         speak("У Елеси не вышло, видно руки у меня из гнезна растут")
 
     elif cmd == 'open_browse':
-        # воспроизвести радио
-        # os.system("D:\\Jarvis\\res\\radio_record.m3u")
-        subprocess.Popen('C:/Program Files/Google/Chrome/Application/chrome.exe')
-        speak("Браузер открыт")
+        try:
+            wb.open("https://www.google.ru/")
+            speak("Браузер открыт")
+
+        except TypeError as e:
+            speak("У Елеси не вышло, видно руки из гнезна растут")
+
+    elif cmd == "new_tab":
+        try:
+            pg.FAILSAFE = False
+            x, y = pg.locateCenterOnScreen(r"C:\Users\ivane\eles\elesya_voice_hub\photo\tab_open.png")
+            pg.click(x, y)
+            pg.move(50, 50, 0.5)
+            speak("Новая вкладка открыта")
+        except TypeError as e:
+            speak("У Елеси не вышло, видно руки из гнезна растут")
+
+    elif cmd == 'close_tab':
+        try:
+            pg.FAILSAFE = False
+            x, y = pg.locateCenterOnScreen(r"C:\Users\ivane\eles\elesya_voice_hub\photo\tab_close.png")
+            pg.click(x, y)
+            pg.move(50, 50, 0.5)
+            speak("Вкладка закрыта")
+        except TypeError as e:
+            speak("У Елеси не вышло, видно руки из гнезна растут")
 
     elif cmd == 'close_browse':
-        os.system('TASKKILL /F /IM chrome.exe')
-        speak("Браузер закрыт")
+        try:
+            pg.FAILSAFE = False
+            x,y = pg.locateCenterOnScreen(r"C:\Users\ivane\eles\elesya_voice_hub\photo\browser_close.png")
+            pg.click(x,y)
+            speak("Браузер закрыт")
+        except TypeError as e:
+            speak("У Елеси не вышло, видно руки из гнезна растут")
+
 
     elif cmd == 'off_comp':
         os.system('shutdown -r -t 0')
@@ -119,21 +203,29 @@ def execute_cmd(cmd):
         speak(s)
 
     elif cmd == "whome":
-        # рассказать анекдот
         speak("Вы лучший в мире человек, мой создатель Иван Елескин, ваша мудрость несравненна")
 
-    elif cmd == "search_youtube":
-        wb.open("https://www.youtube.com/")
-        speak("Youtube открыт. Пользуйтесь.")
 
     elif cmd == "search":
-        wb.open("https://kadikama.ru/106-aladdin.html")
-        speak("Алладин открыт. Приятного просмотра")
+        b = user_word.split()
+        b = '+'.join(b)
+        wb.open(f"https://www.google.com/search?q={b}&rlz=1C1CHZN_ruEE949EE949&oq=%D0%B3%D0%B4%D0%B5+%D0%B6%D0%B8%D0%B2%D1%83%D1%82+%D0%BA%D0%B8%D1%82%D1%8B&aqs=chrome..69i57j0l2j0i22i30l7.5522j0j15&sourceid=chrome&ie=UTF-8")
+
+    elif cmd == "search_pic":
+        b = user_word.split()
+        b = '+'.join(b)
+        wb.open(f"https://www.google.com/search?q={b}&tbm=isch&ved=2ahUKEwj5gZ_Oq5LwAhWXsSoKHUUVBUwQ2-cCegQIABAA&oq=%D0%BA%D0%B8%D1%82&gs_lcp=CgNpbWcQAzIECAAQQzIECAAQQzIECAAQQzIECAAQQzICCAAyAggAMgIIADICCAAyAggAMgIIADoGCAAQBxAeOgQIABAYUNQhWM1AYNJCaABwAHgAgAGmAYgB-giSAQM3LjSYAQCgAQGqAQtnd3Mtd2l6LWltZ8ABAQ&sclient=img&ei=gq2BYPm4C5fjqgHFqpTgBA&bih=937&biw=1920&rlz=1C1CHZN_ruEE949EE949")
+
 
     elif cmd == "screen":
         now = datetime.datetime.now()
-        img = pg.screenshot(f"{now.minute}.png")
+        pg.screenshot(rf"C:\Users\ivane\eles\elesya_voice_hub\screen\{now.minute}.png")
         speak("Скрин сделан")
+
+    elif cmd == "hello":
+        tmp = ['хэлоу', 'привет', 'салам', 'здравствуйте', 'тэрэ','бонжур']
+        num = random.choice(tmp)
+        speak(num)
 
 
     else:
@@ -159,8 +251,26 @@ speak_engine.setProperty('voice', 'ru')
 #         speak_engine.setProperty('voice', voice.id)
 
 
-speak("Добрый день. ")
-speak("Меня зовут Елеся")
+speak("Добрый день. Меня зовут Елеся")
+cap = cv2.VideoCapture(0)
+
+while True:
+    speak("Начинаю индентификацию")
+    ret, img = cap.read()
+    cv2.imshow("camera", img)
+    pg.hotkey("escape")
+    if cv2.waitKey(10) == 27:
+        pg.screenshot(rf"C:\Users\ivane\eles\elesya_voice_hub\photo\access.png")
+        speak("Лицо отсканировано")
+        access = main()
+        if access[0] == True:
+            speak(access[1])
+            break
+        elif access[0] == False:
+            speak(access[1])
+cap.release()
+cv2.destroyAllWindows()
+
 
 while True:
     r = sr.Recognizer()
@@ -169,8 +279,4 @@ while True:
         audio = r.listen(source)
     callback(r, audio)
     time.sleep(0.1)
-
-
-
-
 
