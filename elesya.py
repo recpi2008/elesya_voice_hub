@@ -1,4 +1,4 @@
-import os, sys, subprocess
+import os, sys, subprocess, psutil
 from time import sleep
 import random
 import time
@@ -13,8 +13,8 @@ import webbrowser as wb
 import pyautogui as pg
 import cv2
 from selenium import webdriver
-from face import main
-
+# from face import main
+from subprocess import call
 import requests, bs4, re, webbrowser
 import os, sys, subprocess
 from urllib import request
@@ -27,8 +27,8 @@ import html2text
 opts = {
     "alias": ('елес', 'елеся', 'и леся', 'леся', 'илеся', 'еся','елец','олеся',
               'элисия','елисе','elisey','элеси','жилище','элисед','elisio','elise',
-              'жилища','ереси','элисис','делисия','гилея','илюся','элез'),
-    "tbr": ('скажи', 'расскажи', 'покажи', 'сколько', 'произнеси','найди','найти','открой',
+              'жилища','ереси','элисис','делисия','гилея','илюся','элез',"железо"),
+    "tbr": ('скажи', 'расскажи', 'покажи', 'сколько', 'произнеси','найди','найти',
             'сделай','включи'),
     "cmds": {
         "ctime": ('текущее время', 'сейчас времени', 'который час'),
@@ -46,8 +46,11 @@ opts = {
         "close_tab": ('закрой вкладку','закрыть вкладку'),
         "hello": ('привет', 'здравствуй'),
         'camera': ('камера','видеокамера'),
-        "note_book": ("блокнот","запись"),
-        'close_note_book': ("закрой блокнот", "закрой")
+        "open_notebook": ("блокнот","запись"),
+        "open_calc": ("калькулятор","считать"),
+        'close_note_book': ("закрой блокнот", "закрой"),
+        "open_telegram": ("открой telegram","открой телеграм","телега","открой телегу"),
+        "close_telegram": ("закрой telegram","закрой телеграм","закрой телегу")
     }
 }
 
@@ -100,6 +103,11 @@ def recognize_cmd(cmd):
 
     return RC
 
+# Запускает внешнюю команду ОС
+def osrun(cmd):
+    PIPE = subprocess.PIPE
+    p = subprocess.Popen(cmd, shell=True, stdin=PIPE, stdout=PIPE, stderr=subprocess.STDOUT)
+
 def execute_cmd(cmd,user_word):
     if cmd == 'ctime':
         # сказать текущее время
@@ -128,18 +136,24 @@ def execute_cmd(cmd,user_word):
         speak(f"Запрос {user_word} найден")
 
 
-    elif cmd == "note_book":
+    elif cmd == "open_notebook":
         speak("открываю ваш блокнот")
-        os.system('notepad')
+        osrun('notepad')
 
-    # elif cmd == 'close_note_book':
-    #     try:
-    #         pg.FAILSAFE = False
-    #         x,y = pg.locateCenterOnScreen(r"C:\Users\ivane\eles\elesya_voice_hub\photo\browser_close.png")
-    #         pg.click(x,y)
-    #         speak("Блокнот закрыт")
-    #     except TypeError as e:
-    #         speak("У Елеси не вышло, видно руки у меня из гнезна растут")
+
+    elif cmd == "open_calc":
+        speak("открываю калькулятор")
+        osrun('calc')
+
+    elif cmd == "open_telegram":
+        speak("открываю телеграм")
+        os.startfile(r"C:\Users\ivane\AppData\Roaming\Telegram Desktop\Telegram.exe")
+    elif cmd == "close_telegram":
+        speak("закрываю телеграм")
+        for process in (process for process in psutil.process_iter() if process.name() == "Telegram.exe"):
+            process.kill()
+
+
 
     elif cmd == 'open_browse':
         try:
@@ -252,24 +266,24 @@ speak_engine.setProperty('voice', 'ru')
 
 
 speak("Добрый день. Меня зовут Елеся")
-cap = cv2.VideoCapture(0)
-
-while True:
-    speak("Начинаю индентификацию")
-    ret, img = cap.read()
-    cv2.imshow("camera", img)
-    pg.hotkey("escape")
-    if cv2.waitKey(10) == 27:
-        pg.screenshot(rf"C:\Users\ivane\eles\elesya_voice_hub\photo\access.png")
-        speak("Лицо отсканировано")
-        access = main()
-        if access[0] == True:
-            speak(access[1])
-            break
-        elif access[0] == False:
-            speak(access[1])
-cap.release()
-cv2.destroyAllWindows()
+# cap = cv2.VideoCapture(0)
+#
+# while True:
+#     speak("Начинаю индентификацию")
+#     ret, img = cap.read()
+#     cv2.imshow("camera", img)
+#     pg.hotkey("escape")
+#     if cv2.waitKey(10) == 27:
+#         pg.screenshot(rf"C:\Users\ivane\eles\elesya_voice_hub\photo\access.png")
+#         speak("Лицо отсканировано")
+#         access = main()
+#         if access[0] == True:
+#             speak(access[1])
+#             break
+#         elif access[0] == False:
+#             speak(access[1])
+# cap.release()
+# cv2.destroyAllWindows()
 
 
 while True:

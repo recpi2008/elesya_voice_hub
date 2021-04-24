@@ -6,7 +6,8 @@ SpeechRecognition==3.8.1
 bs4==0.0.1
 fuzzywuzzy==0.18.0
 selenium==3.141.0
-
+opencv-python
+ AppData/Local/Temp/_MEI5922/face_recognition_models/models/shape_predictor_68_face_landmarks.dat
 pyinstaller --hidden-import=pyttsx3.drivers --hidden-import=pyttsx3.drivers.dummy --hidden-import=pyttsx3.drivers.espeak --hidden-import=pyttsx3.drivers.nsss --hidden-import=pyttsx3.drivers.sapi5 -F main.py
 
 pip install --trusted-host pypi.org --trusted-host files.pythonhosted.org selenium # если не устанавливает
